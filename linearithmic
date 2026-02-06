@@ -1,0 +1,67 @@
+#Min-Heapify for HeapSort it to maintain min-heap property
+def min_heapify(arr, n, i):
+    smallest = i
+    left = 2 * i + 1
+    right = 2 * i + 2
+
+    if left < n and arr[left][0] < arr[smallest][0]:
+        smallest = left
+    if right < n and arr[right][0] < arr[smallest][0]:
+        smallest = right
+
+    if smallest != i:
+        arr[i], arr[smallest] = arr[smallest], arr[i]
+        min_heapify(arr, n, smallest)
+
+def heap_sort_min(arr):
+    n = len(arr)
+
+    for i in range(n // 2 - 1, -1, -1): # Build min-heap
+        min_heapify(arr, n, i)
+    print_heap_tree(arr, "Heap after build")
+
+    print("Sorting tasks by priority (lowest → highest):\n") #Extract elements one by one
+    sorted_tasks = []
+    for i in range(n - 1, -1, -1):
+        arr[0], arr[i] = arr[i], arr[0] # Move root (smallest) to sorted list
+        sorted_tasks.append(arr[i]) # smallest first
+        min_heapify(arr, i, 0)
+        print_heap_tree(arr[:i], f"Heap after moving {sorted_tasks[-1][1]}")
+        print(f"Sorted part: {sorted_tasks[::-1]}\n")
+
+    sorted_tasks.reverse()  # make ascending order from lowest → highest
+    return sorted_tasks
+
+def print_heap_tree(arr, title="Heap Tree"):#Print Heap as Tree by level to level
+    print(f"\n {title}:")
+    n = len(arr)
+    level = 0
+    next_level = 1
+    for i, (priority, name) in enumerate(arr):
+        print(f"({priority},{name}) ", end="") # Print each node with priority & label
+        if i + 1 == next_level:
+            print("\n")  # new level
+            level += 1
+            next_level += 2 ** level
+    print("-" * 40)
+
+tasks = [
+    (4, "Order A"),
+    (1, "Order B"),
+    (6, "Order C"),
+    (2, "Order D"),
+    (5, "Order E"),
+    (7, "Order F"),
+    (3, "Order G"),
+]
+
+print("Incoming delivery tasks:")
+for p, name in tasks:
+    print(f"   {name} → priority {p}")
+
+print("\n--- Scheduling with HeapSort (Min-Heap) ---")
+sorted_tasks = heap_sort_min(tasks)
+
+print("\nFinal Delivery Order (by priority, highest → lowest):")
+for i, (priority, name) in enumerate(sorted_tasks[::-1], start=1):
+    print(f"   {i}. {name} → priority {priority}")
