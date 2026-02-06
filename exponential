@@ -1,1 +1,61 @@
+    #Recursively generates all binary passwords of given length.
+    #Prints each password and returns the total count.
+def generate_binary_passwords(length, prefix=""):  
+    if length == 0:
+        print(prefix)
+        return 1  
+  
+    count = 0
+    count += generate_binary_passwords(length-1, prefix + "0")
+    count += generate_binary_passwords(length-1, prefix + "1")
+    return count
 
+#Counts total number of binary passwords of given length (2^n)
+def count_binary_passwords(length): 
+    if length == 0:
+        return 1
+    return count_binary_passwords(length-1) + count_binary_passwords(length-1)
+
+# Generates a table of password length vs total passwords to show exponential growth. 
+def generate_growth_table(max_length): 
+    print("\nPassword Length | Total Passwords")
+    print("-" * 30)
+    for n in range(1, max_length + 1):
+        total = count_binary_passwords(n)
+        print(f"{n:14} | {total:14}")
+
+    #Prints a simple ASCII binary recursion tree for visualization.
+    #Each level doubles the number of branches to illustrate exponential growth.
+def print_binary_tree(levels):
+    print("\nASCII Representation of Binary Recursion Tree:")
+    print("-" * 45)
+    
+
+    width = 2 ** levels
+    tree = [["" for _ in range(width)] for _ in range(levels + 1)]
+
+    def fill(level, column_start, column_end, prefix):
+        if level > levels:
+            return
+        
+        mid = (column_start + column_end) // 2
+        tree[level][mid] = prefix if prefix != "" else "root"
+        
+        fill(level + 1, column_start, mid, prefix + "0")
+        fill(level + 1, mid, column_end, prefix + "1")
+
+    fill(0, 0, width, "")
+    
+    for row in tree:
+        print("".join(node.center(8) if node else " " * 8 for node in row))
+    
+password_length = 4
+print(f"All binary passwords of length {password_length}:\n")
+total_passwords = generate_binary_passwords(password_length)
+print("Total passwords:", total_passwords)
+
+
+print("\nExponential Growth Table for Binary Passwords (length 1 to 12):")
+generate_growth_table(12) # Show exponential growth table
+
+print_binary_tree(password_length) # Show ASCII tree
